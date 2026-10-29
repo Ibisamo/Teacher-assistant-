@@ -94,6 +94,10 @@ main{flex:1;overflow:auto;padding:18px;min-width:0}.mu{color:var(--mu)}.empty{pa
 .fc img{max-width:100%;max-height:160px;border-radius:10px;display:block;margin:8px auto 0}
 .fc .ed{position:absolute;top:2px;inset-inline-start:6px;font-size:1rem;opacity:.75;cursor:pointer;font-style:normal}
 .tk .dg{background-image:linear-gradient(rgba(76,175,80,.32),rgba(76,175,80,.32))}.tk .dg input,.tk .dg textarea{background:transparent}.tk{border:2px solid var(--mu)}.tk th,.tk td{border:1px solid var(--mu)}.tk tr:nth-child(2) th,.tk tr:nth-child(2) td{border-bottom:2px solid var(--mu)}.tk td input{border-color:transparent}.tk th{background:var(--ac2);font-weight:700}.tk textarea{width:96px;min-height:52px;border-radius:4px;padding:2px 4px;font-size:.85rem;resize:both;border:1px solid var(--bd);color:inherit}
+#vbar{position:fixed;inset-inline-start:12px;bottom:calc(12px + env(safe-area-inset-bottom,0px));z-index:80;display:flex;gap:6px;align-items:center}
+#vbar button{border-radius:999px;border:0;background:var(--ac);color:#fff;font-size:1.3rem;padding:10px 14px;box-shadow:0 2px 8px #0004}
+#vbar button.rec{background:#d64545;animation:vp 1s infinite}#vbar .vl{font-size:.85rem;font-weight:700;padding:10px 12px;background:var(--sd)}
+@keyframes vp{50%{opacity:.65}}
 </style></head><body>
 <header><h1>مساعد المعلم</h1><span id="sv"></span><span id="cs" style="font-size:.85rem;opacity:.85"></span><select id="th" aria-label="الثيم"><option value="">كلاسيكي</option><option value="sci">علوم 🔬</option><option value="math">رياضيات ➗</option><option value="star">نجوم لطيفة ⭐</option><option value="candy">ملصقات ملوّنة 🍭</option></select><button data-a="lang">English</button><button id="t1" data-a="tab" data-v="lessons">الدروس</button><button id="t2" data-a="tab" data-v="sched">جدول المواعيد</button><button id="t3" data-a="tab" data-v="stud">الطلاب والحضور</button><button id="t4" data-a="tab" data-v="track">متابعة الطلاب</button><button id="t5" data-a="tab" data-v="stk">لوحة الملصقات</button><button data-a="pz" data-d="-1" aria-label="تصغير">🔍－</button><button data-a="pz" data-d="1" aria-label="تكبير">🔍＋</button><button data-a="pres">⛶ ملء الشاشة</button><button data-a="bk">💾 نسخة احتياطية</button><button id="cl" data-a="cl">☁ تسجيل الدخول</button></header><input type="file" id="imp" accept=".json,application/json" hidden><div id="at" hidden><div class="box" id="atb" style="max-height:80vh;overflow:auto"></div></div><div id="px"><button data-a="pz" data-d="-1">🔍－</button><button data-a="pz" data-d="1">🔍＋</button><button data-a="pres">✕</button></div>
 <div id="rem" hidden></div><div class="app"><aside><input id="q" type="search" placeholder="بحث في الدروس…" aria-label="بحث" style="width:100%;margin-bottom:8px"><select id="so" aria-label="ترتيب" style="width:100%;margin-bottom:8px"><option value="man">الترتيب: يدوي</option><option value="new">الترتيب: الأحدث أولاً</option><option value="old">الترتيب: الأقدم أولاً</option></select><div style="display:flex;gap:6px"><select id="gs" aria-label="الصف" style="flex:1;min-width:0"></select><button data-a="addG" style="padding:4px 10px">＋ صف</button></div><div id="tree"></div></aside><main id="main"></main></div>
@@ -466,5 +470,26 @@ if(a==='fsel'){l.qcur=t.dataset.id;save();render()}
 else if(a==='fnew')dlg('اسم المجلد (مثلاً: نموذج أ)',1,n=>{const f={id:uid(),name:n};(l.qf=l.qf||[]).push(f);l.qcur=f.id;save();render()});
 else if(a==='fren')dlg('اسم المجلد',1,n=>{const f=(l.qf||[]).find(x=>x.id===curFolder(l));if(f){f.name=n;save();render()}});
 else if(a==='fdel')dlg('حذف المجلد وكل أسئلته؟',0,()=>{const c=curFolder(l);if(!c)return;l.quiz=(l.quiz||[]).filter(x=>(x.f||'')!==c);l.qf=(l.qf||[]).filter(x=>x.id!==c);l.qcur='';save();render()})});
+/* 🎤 الإدخال الصوتي: زر عائم يملي النص في أي خانة كتابة */
+{const SR=window.SpeechRecognition||window.webkitSpeechRecognition;let rec=null,VF=null,VON=false,ht;
+const bar=document.createElement('div');bar.id='vbar';bar.hidden=true;bar.innerHTML='<button id="vm" type="button" aria-label="إملاء صوتي">🎤</button><button id="vl" class="vl" type="button" aria-label="لغة الإملاء"></button>';document.body.appendChild(bar);
+const vm=bar.querySelector('#vm'),vl=bar.querySelector('#vl'),vlang=()=>PREF().vlang||'ar-SA',paint=()=>{vl.textContent=vlang()==='en-US'?'EN':'ع';vm.classList.toggle('rec',VON)};paint();
+const elig=el=>el&&((el.tagName==='TEXTAREA')||(el.tagName==='INPUT'&&['text','search','','url'].includes((el.getAttribute('type')||'').toLowerCase())));
+const vStop=()=>{VON=false;try{rec&&rec.stop()}catch(_){}rec=null;paint()};
+function vIns(txt){txt=txt.trim();if(!txt)return;if(!VF||!VF.isConnected){vStop();bar.hidden=true;return}
+const f=VF,st=f.selectionStart??f.value.length,en=f.selectionEnd??st,pre=f.value.slice(0,st),sep=pre&&!/\s$/.test(pre)?' ':'';
+f.value=pre+sep+txt+f.value.slice(en);const c=(pre+sep+txt).length;try{f.setSelectionRange(c,c)}catch(_){}
+f.dispatchEvent(new Event('input',{bubbles:true}));f.dispatchEvent(new Event('change',{bubbles:true}))}
+function vStart(){if(!SR){dlg(E('المتصفح لا يدعم الإدخال الصوتي. استخدمي Chrome.','Voice input is not supported in this browser. Use Chrome.'),0,()=>{});return}
+vStop();VON=true;const r=rec=new SR();r.lang=vlang();r.continuous=false;r.interimResults=false;
+r.onresult=e=>{for(let i=e.resultIndex;i<e.results.length;i++)if(e.results[i].isFinal)vIns(e.results[i][0].transcript)};
+r.onerror=e=>{if(e.error==='not-allowed'||e.error==='service-not-allowed'){vStop();dlg(E('لم يُسمح باستخدام الميكروفون. فعّليه من إعدادات الموقع في المتصفح.','Microphone permission was denied. Enable it in the browser’s site settings.'),0,()=>{})}};
+r.onend=()=>{if(VON&&rec===r){try{r.start()}catch(_){vStop()}}};
+try{r.start()}catch(_){vStop()}paint()}
+bar.addEventListener('mousedown',e=>e.preventDefault());bar.addEventListener('touchstart',e=>e.preventDefault(),{passive:false});
+vm.onclick=()=>{if(VF&&VF.isConnected)VF.focus();VON?vStop():vStart()};
+vl.onclick=()=>{PREF().vlang=vlang()==='en-US'?'ar-SA':'en-US';save();const was=VON;paint();if(was)vStart()};
+document.addEventListener('focusin',e=>{if(elig(e.target)){VF=e.target;clearTimeout(ht);bar.hidden=false}});
+document.addEventListener('focusout',()=>{clearTimeout(ht);ht=setTimeout(()=>{if(!VON&&!elig(document.activeElement))bar.hidden=true},2500)})}
 (async()=>{await open();const s=await get('state');if(s)S=s;applyPrefs();render();window._ready=true;if(fuser)cloudSync()})();
 </script></body></html>
