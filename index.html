@@ -93,7 +93,7 @@ main{flex:1;overflow:auto;padding:18px;min-width:0}.mu{color:var(--mu)}.empty{pa
 .fc .fk,.fc .bk{width:100%}.fc .fk{display:block}.fc .bk{display:none}.fc.fl .fk{display:none}.fc.fl .bk{display:block}
 .fc img{max-width:100%;max-height:160px;border-radius:10px;display:block;margin:8px auto 0}
 .fc .ed{position:absolute;top:2px;inset-inline-start:6px;font-size:1rem;opacity:.75;cursor:pointer;font-style:normal}
-.tk .dg{background-image:linear-gradient(rgba(76,175,80,.28),rgba(76,175,80,.28))}.tk .dr{background-image:linear-gradient(rgba(229,57,53,.2),rgba(229,57,53,.2))}.tk .dg input,.tk .dr input,.tk .dg textarea,.tk .dr textarea{background:transparent}.tk textarea{width:96px;min-height:52px;border-radius:4px;padding:2px 4px;font-size:.85rem;resize:both;border:1px solid var(--bd);color:inherit}
+.tk .dg{background-image:linear-gradient(rgba(76,175,80,.32),rgba(76,175,80,.32))}.tk .dg input,.tk .dg textarea{background:transparent}.tk{border:2px solid var(--mu)}.tk th,.tk td{border:1px solid var(--mu)}.tk tr:nth-child(2) th,.tk tr:nth-child(2) td{border-bottom:2px solid var(--mu)}.tk td input{border-color:transparent}.tk th{background:var(--ac2);font-weight:700}.tk textarea{width:96px;min-height:52px;border-radius:4px;padding:2px 4px;font-size:.85rem;resize:both;border:1px solid var(--bd);color:inherit}
 </style></head><body>
 <header><h1>مساعد المعلم</h1><span id="sv"></span><span id="cs" style="font-size:.85rem;opacity:.85"></span><select id="th" aria-label="الثيم"><option value="">كلاسيكي</option><option value="sci">علوم 🔬</option><option value="math">رياضيات ➗</option><option value="star">نجوم لطيفة ⭐</option><option value="candy">ملصقات ملوّنة 🍭</option></select><button data-a="lang">English</button><button id="t1" data-a="tab" data-v="lessons">الدروس</button><button id="t2" data-a="tab" data-v="sched">جدول المواعيد</button><button id="t3" data-a="tab" data-v="stud">الطلاب والحضور</button><button id="t4" data-a="tab" data-v="track">متابعة الطلاب</button><button id="t5" data-a="tab" data-v="stk">لوحة الملصقات</button><button data-a="pz" data-d="-1" aria-label="تصغير">🔍－</button><button data-a="pz" data-d="1" aria-label="تكبير">🔍＋</button><button data-a="pres">⛶ ملء الشاشة</button><button data-a="bk">💾 نسخة احتياطية</button><button id="cl" data-a="cl">☁ تسجيل الدخول</button></header><input type="file" id="imp" accept=".json,application/json" hidden><div id="at" hidden><div class="box" id="atb" style="max-height:80vh;overflow:auto"></div></div><div id="px"><button data-a="pz" data-d="-1">🔍－</button><button data-a="pz" data-d="1">🔍＋</button><button data-a="pres">✕</button></div>
 <div id="rem" hidden></div><div class="app"><aside><input id="q" type="search" placeholder="بحث في الدروس…" aria-label="بحث" style="width:100%;margin-bottom:8px"><select id="so" aria-label="ترتيب" style="width:100%;margin-bottom:8px"><option value="man">الترتيب: يدوي</option><option value="new">الترتيب: الأحدث أولاً</option><option value="old">الترتيب: الأقدم أولاً</option></select><div style="display:flex;gap:6px"><select id="gs" aria-label="الصف" style="flex:1;min-width:0"></select><button data-a="addG" style="padding:4px 10px">＋ صف</button></div><div id="tree"></div></aside><main id="main"></main></div>
@@ -367,9 +367,9 @@ if(cur&&(m=l.match(/^\(?([A-Da-dأابجد])\s*[\).:\-]\s*(.+)$/))){cur.o.push(m
 if((m=l.match(/^(?:q(?:uestion)?\s*\d*|tf|t\/f|true\/false|س|السؤال|\d+)\s*[:.)\-]\s*(.+)$/i))){push();cur={q:m[1].trim().replace(/[*_]/g,''),o:[],a:null,tf:null};continue}
 if(cur&&!cur.o.length)cur.q+=' '+l}
 push();return out}
-function gamesHtml(l){const qs=l.quiz||[],mc=qs.filter(x=>x.t==='mc').length,tf=qs.length-mc,opt=(v,t)=>`<option value="${v}" ${PT===v?'selected':''}>${t}</option>`;
-return `<div class="form"><button class="pri" data-a="qimp">📥 استيراد أسئلة</button><button data-a="qnew" data-t="mc">${E('＋ سؤال اختيار من متعدد','＋ Multiple choice question')}</button><button data-a="qnew" data-t="tf">${E('＋ سؤال صح / خطأ','＋ True / False question')}</button><label>المؤقّت<select id="gt">${opt(0,'بدون')}${opt(10,'10 ث')}${opt(20,'20 ث')}${opt(30,'30 ث')}</select></label></div>`+
-(qs.length?`<div class="form"><button data-a="gp" data-k="mc" ${mc?'':'disabled'}>${E('▶ اختيار من متعدد','▶ Multiple choice')} (${mc})</button><button data-a="gp" data-k="tf" ${tf?'':'disabled'}>${E('▶ صح أو خطأ','▶ True / False')} (${tf})</button><button data-a="gp" data-k="all">${E('▶ الكل','▶ All')} (${qs.length})</button><button data-a="qclr">🗑 مسح كل الأسئلة</button></div>`:'<div class="empty">لا توجد أسئلة بعد. اضغطي «استيراد أسئلة» والصقي الأسئلة.</div>')+
+function gamesHtml(l){const cf=curFolder(l),qs=(l.quiz||[]).filter(x=>(x.f||'')===cf),mc=qs.filter(x=>x.t==='mc').length,tf=qs.length-mc,opt=(v,t)=>`<option value="${v}" ${PT===v?'selected':''}>${t}</option>`;
+return folderBar(l,cf)+`<div class="form"><button class="pri" data-a="qimp">📥 استيراد أسئلة</button><button data-a="qnew" data-t="mc">${E('＋ سؤال اختيار من متعدد','＋ Multiple choice question')}</button><button data-a="qnew" data-t="tf">${E('＋ سؤال صح / خطأ','＋ True / False question')}</button><label>المؤقّت<select id="gt">${opt(0,'بدون')}${opt(10,'10 ث')}${opt(20,'20 ث')}${opt(30,'30 ث')}</select></label></div>`+
+(qs.length?`<div class="form"><button data-a="gp" data-k="mc" ${mc?'':'disabled'}>${E('▶ اختيار من متعدد','▶ Multiple choice')} (${mc})</button><button data-a="gp" data-k="tf" ${tf?'':'disabled'}>${E('▶ صح أو خطأ','▶ True / False')} (${tf})</button><button data-a="gp" data-k="all">${E('▶ الكل','▶ All')} (${qs.length})</button><button data-a="qclr">🗑 مسح أسئلة المجلد</button></div>`:'<div class="empty">لا توجد أسئلة بعد. اضغطي «استيراد أسئلة» والصقي الأسئلة.</div>')+
 qs.map((x,i)=>`<div class="it"><div class="h"><b>${i+1}</b><span class="mu">${x.t==='mc'?E('اختيار من متعدد','Multiple choice'):E('صح / خطأ','True / False')}</span><button data-a="qedit" data-id="${x.id}">${E('✏️ تعديل','✏️ Edit')}</button><button data-a="qdel" data-id="${x.id}" aria-label="حذف">🗑</button></div><div class="qbox" dir="auto">${esc(x.q)}</div>${x.img?`<img class="qthumb" src="${x.img}" alt="">`:''}<div class="qopts">${x.t==='mc'?x.o.map((o,j)=>`<div class="qo k${j%6}" dir="auto">${j===x.a?'✔ ':''}<b>${'ABCDEF'[j]})</b> ${esc(o)}</div>`).join(''):`<div class="qo k${x.a?1:5}">✔ ${x.a?E('صح','True'):E('خطأ','False')}</div>`}</div></div>`).join('')}
 function qiOpen(){$('#atb').innerHTML=`<h3 style="margin:0 0 8px">${E('📥 استيراد أسئلة','📥 Import questions')}</h3><p class="mu">${E('الصقي الأسئلة بالصيغة المعتمدة (اختيار من متعدد أو صح/خطأ).','Paste the questions in the supported format (multiple choice or true/false).')}</p><textarea id="qi" rows="10" dir="auto" style="width:100%" placeholder="Q: ...\nA) ...\nB) ...\nC) ...\nD) ...\nAnswer: B\n\nTF: ...\nAnswer: True"></textarea><p class="mu" id="qm"></p><div class="row"><button class="pri" data-a="qok">${E('استيراد','Import')}</button><button data-a="atx">${E('إغلاق','Close')}</button></div>`;$('#at').hidden=false}
 let GS=1;
@@ -377,7 +377,7 @@ const GB=p=>`<span class="gbtns">${p?`<button data-a="gpz" aria-label="${E('إي
 function gameTimer(){const g=GM;clearInterval(g.tm);if(!g.t||g.lock)return;g.tm=setInterval(()=>{g.left--;const t=$('#gtm');if(t)t.textContent='⏱ '+g.left;if(g.left<=0){clearInterval(g.tm);gameAns(-1)}},1000)}
 function gamePause(){const g=GM;if(!g)return;const o=$('#gpo');if(o){o.remove();g.paused=false;gameTimer();return}
 g.paused=true;clearInterval(g.tm);$('#gm').insertAdjacentHTML('beforeend',`<div id="gpo" class="gpause"><div>⏸ ${E('متوقف مؤقتاً','Paused')}</div><button class="pri" data-a="gpz" style="font-size:1.4rem;padding:10px 28px">▶ ${E('متابعة','Resume')}</button><button data-a="grs">🔄 ${E('البدء من جديد','Restart')}</button></div>`)}
-function gameStart(kind){const l=L();let qs=(l?.quiz||[]).filter(x=>kind==='all'||x.t===kind);if(!qs.length)return;
+function gameStart(kind){const l=L();let qs=(l?.quiz||[]).filter(x=>(x.f||'')===curFolder(l)&&(kind==='all'||x.t===kind));if(!qs.length)return;
 qs=shuf(qs).map(x=>{if(x.t!=='mc')return x;const idx=shuf(x.o.map((_,i)=>i));return{...x,o:idx.map(i=>x.o[i]),a:idx.indexOf(x.a)}});
 GM={qs,i:0,sc:0,kind,t:PT,wrong:[],lock:false};let el=$('#gm');if(!el){el=document.createElement('div');el.id='gm';document.body.appendChild(el)}el.style.setProperty('--gs',GS);gameQ()}
 function gameQ(){const g=GM,q=g.qs[g.i],el=$('#gm');g.lock=false;g.paused=false;clearInterval(g.tm);
@@ -393,9 +393,9 @@ $('#gm').innerHTML=`<div class="gtop"><span></span>${GB(0)}</div><div class="gr"
 {const r5=render;render=function(){r5();const l=L();if(view==='lessons'&&l&&TF==='games'&&$('#items')){$('#items').innerHTML=gamesHtml(l);applyLang($('#items'))}}}
 document.addEventListener('click',e=>{const t=e.target.closest('[data-a]');if(!t)return;const a=t.dataset.a,d=t.dataset;
 if(a==='qimp')qiOpen();
-else if(a==='qok'){const r=parseQuiz($('#qi').value),l=L();if(!r.length){$('#qm').textContent=E('لم أجد أسئلة بالصيغة المتوقعة.','No questions found in the expected format.');return}l.quiz=(l.quiz||[]).concat(r);save();$('#at').hidden=true;render()}
+else if(a==='qok'){const r=parseQuiz($('#qi').value),l=L();if(!r.length){$('#qm').textContent=E('لم أجد أسئلة بالصيغة المتوقعة.','No questions found in the expected format.');return}r.forEach(x=>{if(curFolder(l))x.f=curFolder(l)});l.quiz=(l.quiz||[]).concat(r);save();$('#at').hidden=true;render()}
 else if(a==='qdel'){const l=L();l.quiz=(l.quiz||[]).filter(x=>x.id!==d.id);save();render()}
-else if(a==='qclr')dlg('مسح كل الأسئلة؟',0,()=>{L().quiz=[];save();render()});
+else if(a==='qclr')dlg('مسح أسئلة هذا المجلد؟',0,()=>{const l=L(),c=curFolder(l);l.quiz=(l.quiz||[]).filter(x=>(x.f||'')!==c);save();render()});
 else if(a==='gp')gameStart(d.k);
 else if(a==='ga')gameAns(+d.i);
 else if(a==='gn'){GM.i++;GM.i>=GM.qs.length?gameEnd():gameQ()}
@@ -415,7 +415,7 @@ const edShow=h=>{$('#atb').style.width='min(94vw,560px)';$('#atb').innerHTML=h;$
 const edMsg=(a,b)=>{const m=$('#qm');if(m)m.textContent=E(a,b)};
 function qeOpen(id,t){const l=L(),x=id?(l.quiz||[]).find(q=>q.id===id):null,ty=x?x.t:t;if(!l||(id&&!x))return;ED={kind:'q',id:x?x.id:null,t:ty,imgs:{q:x?.img||''}};
 const n=Math.min(6,Math.max(4,x&&x.o?x.o.length:4));
-edShow(`<h3 style="margin:0 0 8px">${x?E('✏️ تعديل السؤال','✏️ Edit question'):E('＋ سؤال جديد','＋ New question')}</h3><div class="mu">${E('السؤال','Question')}</div><textarea id="eq" class="ed-q" rows="3" dir="auto">${esc(x?.q)}</textarea>${imgBox('q',ED.imgs.q,E('صورة توضيحية للسؤال (اختياري)','Illustration for the question (optional)'))}`+
+edShow(`<h3 style="margin:0 0 8px">${x?E('✏️ تعديل السؤال','✏️ Edit question'):E('＋ سؤال جديد','＋ New question')}</h3><div class="mu">${E('السؤال','Question')}</div><textarea id="eq" class="ed-q" rows="3" dir="auto">${esc(x?.q)}</textarea>${imgBox('q',ED.imgs.q,E('صورة توضيحية للسؤال (اختياري)','Illustration for the question (optional)'))}${fdSel(l,x)}`+
 (ty==='mc'?`<div class="mu" style="margin-top:8px">${E('الخيارات — اختاري الإجابة الصحيحة بالدائرة','Options — select the correct one with the circle')}</div>`+[...Array(n)].map((_,j)=>`<label class="eo k${j}"><input type="radio" name="ea" value="${j}" ${x&&x.a===j?'checked':''}><b>${'ABCDEF'[j]}</b><input class="et" dir="auto" value="${esc(x?.o?.[j])}"></label>`).join(''):
 `<div class="mu" style="margin-top:8px">${E('الإجابة الصحيحة','Correct answer')}</div><label class="eo k1"><input type="radio" name="ea" value="1" ${x&&!x.a?'':'checked'}><b>${E('✔ صح','✔ True')}</b></label><label class="eo k5"><input type="radio" name="ea" value="0" ${x&&!x.a?'checked':''}><b>${E('✘ خطأ','✘ False')}</b></label>`)+edFoot('qsv'))}
 function ceOpen(id){const l=L(),x=id?(l.cards||[]).find(c=>c.id===id):null;if(!l||(id&&!x))return;ED={kind:'c',id:x?x.id:null,imgs:{f:x?.fi||'',b:x?.bi||''}};
@@ -435,7 +435,7 @@ if(ED.t==='mc'){document.querySelectorAll('.et').forEach((el,j)=>{const v=el.val
 if(o.length<2){edMsg('أضيفي خيارين على الأقل.','Add at least two options.');return}if(ci<0){edMsg('اختاري الإجابة الصحيحة (واحدة من الخيارات المكتوبة).','Select the correct answer (one of the filled options).');return}}
 let x=ED.id?(l.quiz||[]).find(y=>y.id===ED.id):null;if(!x){x={id:uid(),t:ED.t};(l.quiz=l.quiz||[]).push(x)}
 x.q=q;if(ED.t==='mc'){x.o=o;x.a=ci}else x.a=!!(r&&r.value==='1');
-if(ED.imgs.q)x.img=ED.imgs.q;else delete x.img;
+if(ED.imgs.q)x.img=ED.imgs.q;else delete x.img;const fv=$('#efd')?$('#efd').value:curFolder(l);if(fv)x.f=fv;else delete x.f;l.qcur=fv;
 save();edClose()}
 else if(a==='csave'&&ED&&ED.kind==='c'){const l=L(),f=$('#ef').value.trim(),b=$('#eb').value.trim();if(!f&&!ED.imgs.f){edMsg('اكتبي وجه البطاقة أو أضيفي صورة.','Enter the card front or add an image.');return}
 let c=ED.id?(l.cards||[]).find(y=>y.id===ED.id):null;if(!c){c={id:uid()};(l.cards=l.cards||[]).push(c)}
@@ -444,7 +444,7 @@ save();edClose()}});
 document.addEventListener('change',async e=>{if(e.target.id!=='eimgf')return;const f=e.target.files[0];if(!f||!ED)return;try{ED.imgs[ED.k]=await imgPick(f);ibRefresh(ED.k)}catch(_){edMsg('تعذّر تحميل الصورة.','Could not load the image.')}});
 /* تلوين الأيام + قيمة الجلسة الافتراضية */
 function rateOf(s){return s.rate!==undefined&&s.rate!==''?+s.rate||0:+PREF().rate||0}
-function colorDays(){document.querySelectorAll('#main .tk').forEach(tb=>{const rows=[...tb.rows],n=rows[0].cells.length-2;for(let j=1;j<=n;j++){const v=r=>rows[r].cells[j].querySelector('input,textarea')?.value.trim()||'';const has=!!(v(3)||v(4)||+v(5)>0);rows.forEach(r=>{const c=r.cells[j];if(c){c.classList.toggle('dg',has);c.classList.toggle('dr',!has)}})}})}
+function colorDays(){document.querySelectorAll('#main .tk').forEach(tb=>{const rows=[...tb.rows],n=rows[0].cells.length-2;for(let j=1;j<=n;j++){const v=r=>rows[r].cells[j].querySelector('input,textarea')?.value.trim()||'';const has=+v(5)>0;rows.forEach(r=>{const c=r.cells[j];if(c){c.classList.toggle('dg',has);c.classList.remove('dr')}})}})}
 document.addEventListener('input',e=>{const t=e.target,a=t.dataset.a;
 if(t.id==='rt'){PREF().rate=t.value;save();return}
 if(a==='srt'){const s=S.grades.flatMap(g=>g.students||[]).find(x=>x.id===t.dataset.id);if(s){s.rate=t.value;save()}return}
@@ -455,5 +455,16 @@ else if(k==='n'&&!r.payM){const rt=rateOf(s);if(rt){r.pay=(+r.n>0)?String(Math.r
 save();colorDays()});
 document.addEventListener('click',e=>{const t=e.target.closest('[data-a="rtap"]');if(!t)return;const g=S.grades.find(x=>x.id===S.cur),pre=ymd(TM).slice(0,7);
 (g?.students||[]).forEach(s=>{const rt=rateOf(s);if(!rt)return;Object.entries(s.track||{}).forEach(([k,r])=>{if(k.startsWith(pre)&&+r.n>0&&!r.payM)r.pay=String(Math.round(r.n*rt*100)/100)})});save();render()});
+/* 📁 مجلدات (نماذج) للأسئلة داخل كل درس */
+Object.assign(EN,{'اسم المجلد (مثلاً: نموذج أ)':'Folder name (e.g. Model A)','اسم المجلد':'Folder name','حذف المجلد وكل أسئلته؟':'Delete this folder and all its questions?','مسح أسئلة هذا المجلد؟':'Clear this folder’s questions?','🗑 مسح أسئلة المجلد':'🗑 Clear folder questions'});
+function curFolder(l){const c=l.qcur||'';return c===''||(l.qf||[]).some(f=>f.id===c)?c:''}
+function folderBar(l,cf){const f=l.qf||[],cnt=id=>(l.quiz||[]).filter(x=>(x.f||'')===id).length,tb=(id,n)=>`<button class="tab ${cf===id?'on':''}" data-a="fsel" data-id="${id}">📁 ${esc(n)} <small>${cnt(id)}</small></button>`;
+return `<div class="tabs">${tb('',E('عام','General'))}${f.map(x=>tb(x.id,x.name)).join('')}<button class="tab" data-a="fnew">${E('＋ مجلد جديد','＋ New folder')}</button></div>`+(cf?`<div class="form"><b>📁 ${esc(f.find(x=>x.id===cf)?.name)}</b><button data-a="fren">${E('✏️ إعادة تسمية','✏️ Rename')}</button><button data-a="fdel">${E('🗑 حذف المجلد','🗑 Delete folder')}</button></div>`:'')}
+function fdSel(l,x){const f=l.qf||[];if(!f.length)return '';const c=x?(x.f||''):curFolder(l);return `<label class="mu" style="display:block;margin-top:8px">${E('المجلد','Folder')}<select id="efd" style="width:100%"><option value="" ${c===''?'selected':''}>${E('عام','General')}</option>${f.map(y=>`<option value="${y.id}" ${c===y.id?'selected':''}>${esc(y.name)}</option>`).join('')}</select></label>`}
+document.addEventListener('click',e=>{const t=e.target.closest('[data-a]');if(!t)return;const a=t.dataset.a,l=L();if(!l)return;
+if(a==='fsel'){l.qcur=t.dataset.id;save();render()}
+else if(a==='fnew')dlg('اسم المجلد (مثلاً: نموذج أ)',1,n=>{const f={id:uid(),name:n};(l.qf=l.qf||[]).push(f);l.qcur=f.id;save();render()});
+else if(a==='fren')dlg('اسم المجلد',1,n=>{const f=(l.qf||[]).find(x=>x.id===curFolder(l));if(f){f.name=n;save();render()}});
+else if(a==='fdel')dlg('حذف المجلد وكل أسئلته؟',0,()=>{const c=curFolder(l);if(!c)return;l.quiz=(l.quiz||[]).filter(x=>(x.f||'')!==c);l.qf=(l.qf||[]).filter(x=>x.id!==c);l.qcur='';save();render()})});
 (async()=>{await open();const s=await get('state');if(s)S=s;applyPrefs();render();window._ready=true;if(fuser)cloudSync()})();
 </script></body></html>
